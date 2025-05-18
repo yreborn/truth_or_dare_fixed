@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>真心话大冒险</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', sans-serif;
+            background-color: #ffd6e7;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff8dc7' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            color: #ff4081;
+            text-shadow: 3px 3px 0 #fff, 
+                         5px 5px 0 rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: "!";
+            position: absolute;
+            right: -20px;
+            top: -10px;
+            font-size: 3rem;
+            color: #4caf50;
+            transform: rotate(15deg);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #7e57c2;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .game-container {
+            background-color: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1), 
+                        0 0 0 10px #fff,
+                        0 0 0 20px #ffeb3b;
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .game-container::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: #ffeb3b;
+            transform: rotate(45deg);
+            z-index: -1;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 50px;
+            overflow: hidden;
+            border: 3px solid #ff4081;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tab.active {
+            background: #ff4081;
+            color: white;
+        }
+        
+        .tab:first-child {
+            border-right: 3px solid #ff4081;
+        }
+        
+        .tab::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+        }
+        
+        .tab:hover::after {
+            transform: translateX(0);
+        }
+        
+        .content-display {
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin: 30px 0;
+            padding: 20px;
+            border: 3px dashed #7e57c2;
+            border-radius: 15px;
+            background: #f8f8f8;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .content-display.truth {
+            border-color: #2196f3;
+            background-color: #e3f2fd;
+        }
+        
+        .content-display.dare {
+            border-color: #f44336;
+            background-color: #ffebee;
+        }
+        
+        .content-display::before {
+            content: attr(data-label);
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: white;
+            padding: 0 10px;
+            font-size: 1rem;
+            color: #7e57c2;
+            border-radius: 10px;
+            border: 3px dashed #7e57c2;
+        }
+        
+        .content-display.truth::before {
+            content: "真心话";
+            color: #2196f3;
+            border-color: #2196f3;
+        }
+        
+        .content-display.dare::before {
+            content: "大冒险";
+            color: #f44336;
+            border-color: #f44336;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #ff4081;
+            color: white;
+            box-shadow: 0 5px 0 #c2185b;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', sans-serif;
+            z-index: 10;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #c2185b;
+        }
+        
+        button:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #c2185b;
+        }
+        
+        .settings {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .setting-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        label {
+            font-weight: bold;
+            color: #7e57c2;
+        }
+        
+        input[type="number"] {
+            width: 60px;
+            padding: 8px;
+            border: 3px solid #7e57c2;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            animation: pop 0.5s;
+        }
+        
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #ff4081;
+            transition: all 0.3s;
+        }
+        
+        .close-btn:hover {
+            transform: rotate(90deg);
+            color: #c2185b;
+        }
+        
+        .modal h2 {
+            margin-bottom: 20px;
+            color: #ff4081;
+            font-size: 1.8rem;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border: 3px solid #7e57c2;
+            border-radius: 15px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', sans-serif;
+            resize: none;
+        }
+        
+        .modal-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 50px;
+            overflow: hidden;
+            border: 3px solid #7e57c2;
+        }
+        
+        .modal-tab {
+            flex: 1;
+            padding: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #fff;
+            text-align: center;
+        }
+        
+        .modal-tab.active {
+            background: #7e57c2;
+            color: white;
+        }
+        
+        .modal-tab:first-child {
+            border-right: 3px solid #7e57c2;
+        }
+        
+        .rolling {
+            animation: rolling 0.3s infinite;
+        }
+        
+        @keyframes rolling {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-5px) scale(1.05); }
+            100% { transform: translateY(0) scale(1); }
+        }
+        
+        .content-display {
+            transition: transform 0.2s ease, text-shadow 0.3s ease;
+        }
+        
+        .boom {
+            animation: boom 0.5s;
+        }
+        
+        @keyframes boom {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f00;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .content-display {
+                font-size: 1.5rem;
+                min-height: 150px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>真心话大冒险</h1>
+            <div class="subtitle">勇敢面对真相，挑战自我极限！</div>
+        </div>
+        
+        <div class="game-container">
+            <div class="tabs">
+                <div class="tab active" data-type="truth">真心话</div>
+                <div class="tab" data-type="dare">大冒险</div>
+            </div>
+            
+            <div class="content-display truth" id="content-display">
+                点击开始按钮，开始游戏！
+            </div>
+            
+            <div class="settings">
+                <div class="setting-group">
+                    <label for="roll-time">滚动时间 (秒):</label>
+                    <input type="number" id="roll-time" min="1" max="10" value="3">
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="start-btn" type="button">开始</button>
+                <button id="add-content-btn" type="button">添加内容</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="add-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-modal">&times;</span>
+            <h2>添加新内容</h2>
+            
+            <div class="modal-tabs">
+                <div class="modal-tab active" data-type="truth">真心话</div>
+                <div class="modal-tab" data-type="dare">大冒险</div>
+            </div>
+            
+            <textarea id="new-content" placeholder="每行输入一个内容，多个内容用回车分隔"></textarea>
+            
+            <button id="save-content" type="button">保存</button>
+        </div>
+    </div>
+    
+    <script>
+        // 等待页面完全加载
+        window.onload = function() {
+            // 元素
+            const tabs = document.querySelectorAll('.tab');
+            const modalTabs = document.querySelectorAll('.modal-tab');
+            const contentDisplay = document.getElementById('content-display');
+            const startBtn = document.getElementById('start-btn');
+            const addContentBtn = document.getElementById('add-content-btn');
+            const rollTimeInput = document.getElementById('roll-time');
+            const addModal = document.getElementById('add-modal');
+            const closeModal = document.getElementById('close-modal');
+            const newContentInput = document.getElementById('new-content');
+            const saveContentBtn = document.getElementById('save-content');
+            
+            // 游戏数据
+            let currentType = 'truth';
+            let modalType = 'truth';
+            let isRolling = false;
+            let truthContent = [
+                "你最喜欢的人是谁？",
+                "你最后一次撒谎是什么时候？",
+                "你有什么秘密是从来没有告诉过别人的？",
+                "你最尴尬的经历是什么？",
+                "你最后悔的一件事是什么？",
+                "如果可以变成一个人24小时，你会选择谁？",
+                "你暗恋过谁？",
+                "你做过最疯狂的事情是什么？",
+                "你最大的恐惧是什么？",
+                "你最近一次哭是什么时候？"
+            ];
+            let dareContent = [
+                "模仿一种动物三分钟",
+                "唱一首歌给大家听",
+                "给一位异性朋友打电话说你喜欢他/她",
+                "做10个俯卧撑",
+                "跳一段即兴舞蹈",
+                "用夸张的表情讲一个笑话",
+                "闭着眼睛吃一样东西并猜出是什么",
+                "学一位明星的标志性动作",
+                "向房间里的某人表白",
+                "站在窗户旁大喊'我爱这个世界'"
+            ];
+            
+            // 从本地存储加载数据
+            function loadFromStorage() {
+                const savedTruth = localStorage.getItem('truthContent');
+                const savedDare = localStorage.getItem('dareContent');
+                
+                if (savedTruth) {
+                    truthContent = JSON.parse(savedTruth);
+                }
+                
+                if (savedDare) {
+                    dareContent = JSON.parse(savedDare);
+                }
+            }
+            
+            // 保存数据到本地存储
+            function saveToStorage() {
+                localStorage.setItem('truthContent', JSON.stringify(truthContent));
+                localStorage.setItem('dareContent', JSON.stringify(dareContent));
+            }
+            
+            // 切换标签
+            function switchTab(type) {
+                currentType = type;
+                
+                tabs.forEach(tab => {
+                    if (tab.dataset.type === type) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+                
+                contentDisplay.className = `content-display ${type}`;
+                contentDisplay.textContent = `点击开始按钮，开始游戏！`;
+            }
+            
+            // 切换模态框标签
+            function switchModalTab(type) {
+                modalType = type;
+                
+                modalTabs.forEach(tab => {
+                    if (tab.dataset.type === type) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+                
+                newContentInput.placeholder = `每行输入一个${type === 'truth' ? '真心话' : '大冒险'}内容，多个内容用回车分隔`;
+            }
+            
+            // 开始游戏
+            function startGame() {
+                if (isRolling) return;
+                
+                isRolling = true;
+                const rollTime = parseInt(rollTimeInput.value) || 3;
+                const content = currentType === 'truth' ? truthContent : dareContent;
+                
+                if (content.length === 0) {
+                    alert(`请先添加${currentType === 'truth' ? '真心话' : '大冒险'}内容！`);
+                    isRolling = false;
+                    return;
+                }
+                
+                // 移除之前的动画类
+                contentDisplay.classList.remove('rolling');
+                contentDisplay.classList.remove('boom');
+                
+                // 创建更流畅的滚动效果
+                let startTime = Date.now();
+                let endTime = startTime + (rollTime * 1000);
+                let fastInterval = 50; // 开始时快速切换
+                let slowInterval = 300; // 结束时减慢切换
+                
+                // 播放滚动音效
+                const audio = new Audio('data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAAwAAAbAAkJCQkJCQkJCQkJCQkJCQwMDAwMDAwMDAwMDAwMDAwMD4+Pj4+Pj4+Pj4+Pj4+Pj4//////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAYFAAAAAAAAAbD5VK2IAAAAAAAAAAAAAAAAAAAAAP/jWMQAEvgixgAUmAAEoCgBzCQD/+JYxAGPMjbEACGMABEAsBAAKAEAIAQA/+NYxAYSshLEAHpMAIEAsBAAKAEAIAQA');
+                audio.volume = 0.3;
+                audio.play();
+                
+                function roll() {
+                    const now = Date.now();
+                    const progress = (now - startTime) / (rollTime * 1000); // 0到1之间的进度
+                    
+                    if (now < endTime) {
+                        // 随机选择内容
+                        const randomIndex = Math.floor(Math.random() * content.length);
+                        contentDisplay.textContent = content[randomIndex];
+                        
+                        // 动态调整滚动速度，开始快，结束慢
+                        const currentInterval = fastInterval + (slowInterval - fastInterval) * progress;
+                        
+                        // 添加缩放效果
+                        const scale = 0.95 + Math.random() * 0.1;
+                        contentDisplay.style.transform = `scale(${scale})`;
+                        
+                        // 随机颜色闪烁效果
+                        if (progress < 0.7) {
+                            const hue = Math.floor(Math.random() * 360);
+                            contentDisplay.style.textShadow = `0 0 5px hsla(${hue}, 100%, 50%, 0.5)`;
+                        } else {
+                            contentDisplay.style.textShadow = 'none';
+                        }
+                        
+                        setTimeout(roll, currentInterval);
+                    } else {
+                        // 结束滚动
+                        const finalIndex = Math.floor(Math.random() * content.length);
+                        contentDisplay.textContent = content[finalIndex];
+                        contentDisplay.style.transform = 'scale(1)';
+                        contentDisplay.style.textShadow = 'none';
+                        contentDisplay.classList.add('boom');
+                        
+                        // 播放结束音效
+                        const stopAudio = new Audio('data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAAwAAAZAAQEBAQEBAQEBAQEBAQEBQUFBQUFBQUFBQUFBQUFBQYGBgYGBgYGBgYGBgYGBgYP///////////////////////////////////////////wAAAABMYXZjNTguMTMAAAAAAAAAAAAAAAAkBgUAAAAAAABkCDqCDQAAAAAAAAAAAAAAAAAAAAAA');
+                        stopAudio.volume = 0.5;
+                        stopAudio.play();
+                        
+                        // 创建彩色纸屑效果
+                        createConfetti();
+                        
+                        setTimeout(() => {
+                            contentDisplay.classList.remove('boom');
+                        }, 500);
+                        
+                        isRolling = false;
+                    }
+                }
+                
+                // 开始滚动
+                roll();
+            }
+            
+            // 创建彩色纸屑效果
+            function createConfetti() {
+                const colors = ['#ff4081', '#7e57c2', '#2196f3', '#4caf50', '#ffeb3b', '#ff9800'];
+                
+                for (let i = 0; i < 30; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.left = `${Math.random() * 100}%`;
+                    confetti.style.top = `${Math.random() * 30 + 40}%`;
+                    confetti.style.transform = `scale(${Math.random() * 0.5 + 0.5})`;
+                    document.body.appendChild(confetti);
+                    
+                    // 动画
+                    const animationDuration = Math.random() * 2 + 1;
+                    confetti.style.animation = `
+                        fall ${animationDuration}s forwards,
+                        rotate ${animationDuration / 2}s infinite linear
+                    `;
+                    
+                    // 自定义动画
+                    const keyframes = `
+                        @keyframes fall {
+                            to {
+                                top: 110%;
+                                transform: translateX(${Math.random() * 200 - 100}px) scale(${Math.random() * 0.5 + 0.5});
+                            }
+                        }
+                        @keyframes rotate {
+                            to {
+                                transform: rotate(360deg);
+                            }
+                        }
+                    `;
+                    
+                    const style = document.createElement('style');
+                    style.innerHTML = keyframes;
+                    document.head.appendChild(style);
+                    
+                    // 移除纸屑
+                    setTimeout(() => {
+                        if (confetti.parentNode) {
+                            confetti.parentNode.removeChild(confetti);
+                        }
+                        if (style.parentNode) {
+                            style.parentNode.removeChild(style);
+                        }
+                    }, animationDuration * 1000);
+                }
+            }
+            
+            // 添加新内容
+            function addNewContent() {
+                const text = newContentInput.value.trim();
+                if (!text) return;
+                
+                const lines = text.split('\n').filter(line => line.trim() !== '');
+                
+                if (modalType === 'truth') {
+                    truthContent = [...truthContent, ...lines];
+                } else {
+                    dareContent = [...dareContent, ...lines];
+                }
+                
+                saveToStorage();
+                newContentInput.value = '';
+                addModal.style.display = 'none';
+                
+                alert(`成功添加了 ${lines.length} 条${modalType === 'truth' ? '真心话' : '大冒险'}内容！`);
+            }
+            
+            // 事件监听
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    switchTab(this.dataset.type);
+                });
+            });
+            
+            modalTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    switchModalTab(this.dataset.type);
+                });
+            });
+            
+            // 直接使用onclick属性
+            startBtn.onclick = startGame;
+            
+            addContentBtn.onclick = function() {
+                addModal.style.display = 'flex';
+            };
+            
+            closeModal.onclick = function() {
+                addModal.style.display = 'none';
+            };
+            
+            saveContentBtn.onclick = addNewContent;
+            
+            window.onclick = function(e) {
+                if (e.target === addModal) {
+                    addModal.style.display = 'none';
+                }
+            };
+            
+            // 初始化
+            loadFromStorage();
+            console.log("页面已完全加载，所有功能已初始化");
+        };
+    </script>
+</body>
+</html>
